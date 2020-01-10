@@ -1,0 +1,41 @@
+{
+  "name": "meetr-service-app",
+  "version": "1.0.0",
+  "description": "SockJs server to handle session users for Meetr.me",
+  "main": "index.ts",
+  "scripts": {
+    "test": "jest --coverage --detectOpenHandles",
+    "start": "npx ts-node -r tsconfig-paths/register src/index.ts info",
+    "dev": "npx ts-node -r tsconfig-paths/register src/index.ts debug",
+    "verbose": "npx ts-node -r tsconfig-paths/register src/index.ts verbose"
+  },
+  "author": "Mitch West",
+  "license": "ISC",
+  "dependencies": {
+    "@types/sockjs": "^0.3.31",
+    "@types/uuid": "^3.4.5",
+    "sockjs": "^0.3.19",
+    "ts-node": "^8.4.1",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^3.6.4",
+    "uuid": "^3.3.3",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.21",
+    "@types/sinon": "^7.5.0",
+    "@types/supertest": "^2.0.8",
+    "@typescript-eslint/eslint-plugin": "^2.1.0",
+    "@typescript-eslint/parser": "^2.1.0",
+    "eslint": "^6.3.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.2.0",
+    "eslint-plugin-import": "^2.18.2",
+    "jest": "^24.9.0",
+    "sinon": "^7.5.0",
+    "supertest": "^4.0.2",
+    "ts-jest": "^24.1.0",
+    "tsc-watch": "^3.0.0",
+    "tsconfig-paths-jest": "0.0.1"
+  }
+}

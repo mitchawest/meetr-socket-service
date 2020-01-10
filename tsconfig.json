@@ -1,0 +1,39 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "dist",
+    "sourceMap": true,
+    "module": "commonjs",
+    "target": "es2015",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "paths": {
+      "@root/*": ["*"],
+      "@src/*": ["src/*"],
+      "@app/*": ["src/app/*"],
+      "@model/*": ["src/app/models/*"],
+      "@service/*": ["src/app/services/*"],
+      "@feature/*": ["src/app/features/*"],
+      "@util/*": ["src/app/utils/*"],
+      "@test/*": ["__tests__/*"],
+      "@mock/*": ["__mocks__/*"]
+    },
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2018",
+      "dom"
+    ]
+  },
+  "exclude": [
+    "src/test.ts",
+    "src/**/*.spec.ts",
+    "node_modules"
+  ]
+}
