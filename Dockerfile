@@ -5,6 +5,6 @@ COPY ["package.json", "./"]
 
 RUN npm install 
 COPY . .
-EXPOSE 3000 6380 8008
+EXPOSE 8080
 RUN ls -al -R
 CMD ["npm", "start"]
