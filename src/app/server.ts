@@ -3,7 +3,7 @@ import sockjs from 'sockjs';
 
 import logger from '@service/logger.service';
 import { LEVELS, COLORS } from '@util/enums';
-import sessionHandler from './features/connectionHandler.feature';
+import sessionHandler from '@feature/connectionHandler.feature';
 
 const init = async () => {
     try {

@@ -1,9 +1,8 @@
-import { Connection } from 'sockjs';
 import SessionService from '@service/session.service';
 import logger from '@service/logger.service';
 
 import SocketMessage from '@model/message.model';
-import IdentifiedConnection from '../models/connection.model';
+import IdentifiedConnection from '@model/connection.model';
 
 const sessionService = new SessionService();
 
