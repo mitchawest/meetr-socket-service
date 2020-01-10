@@ -3,41 +3,42 @@ import SessionService from '@service/session.service';
 import logger from '@service/logger.service';
 
 import SocketMessage from '@model/message.model';
+import IdentifiedConnection from '../models/connection.model';
 
 const sessionService = new SessionService();
 
-const sessionHandler = (connection: Connection) => {
+const sessionHandler = (connection: IdentifiedConnection) => {
     try {
         /* Parse params userId and sessionId from connection url if present. If no userId connection id is used. */
         const params: string[] = connection.url.split('?')[1] ? connection.url.split('?')[1].split('&') : [];
-        const userId: string = params.find(param => param.includes('userId')) ? params.find(param => param.includes('userId')).split('=')[1] : connection.id;
-        let sessionId: string = params.find(param => param.includes('sessionId')) ? params.find(param => param.includes('sessionId')).split('=')[1] : null;
+        connection.userId = params.find(param => param.includes('userId')) ? params.find(param => param.includes('userId')).split('=')[1] : connection.id;
+        connection.sessionId = params.find(param => param.includes('sessionId')) ? params.find(param => param.includes('sessionId')).split('=')[1] : null;
 
-        /* Send message to session users on connection close */
-        connection.on('close', () => {
-            sessionService
-                .getSessionConnections(sessionId)
-                .map(sessionConnection => sessionConnection.connection.write(new SocketMessage(userId, 'message', `User ${userId} has disconnected.`).toString()));
-            logger.info(`Disconnected | User: ${userId} | Session: ${sessionId} | Connection: ${connection.id}`);
-        });
+        /* Join or create session and add to session service array. Return message to client with session ID*/
+        sessionService.joinOrCreateSession(connection);
+        connection.write(new SocketMessage('server', connection.sessionId).toString());
+        logger.info(`Connection established | Session: ${connection.sessionId} | Connection: ${connection.id}`);
+        logger.debug(`User: ${connection.userId}`);
 
-        /* If session id parameter present, join existing session and message other session connections that user has joined. */
-        if (sessionId) {
-            sessionId = sessionService.joinOrCreateSession(sessionId, connection, userId);
-            sessionService.getSessionConnections(sessionId).map(sessionConnection => sessionConnection.connection.write(new SocketMessage(userId, 'message', `User ${userId} has joined.`).toString()));
-            connection.write(new SocketMessage('server', 'session', sessionId).toString());
-            logger.info(`Connection established | User: ${userId} | Session: ${sessionId} | Connection: ${connection.id}`);
-            return;
-        }
+        /* Add listener to handle messages from clients */
+        connection.on('data', data => sendMessage(data, connection));
 
-        /* If no session sent, start new session and message id back to user */
-        sessionId = sessionService.createSession(connection, userId);
-        connection.write(new SocketMessage('server', 'session', sessionId).toString());
-        logger.info(`Connection established | User: ${userId} | Session: ${sessionId} | Connection: ${connection.id}`);
-        return;
+        /* Send messages to other session users that user has joined. */
+        sendMessage(`User ${connection.userId} has joined the session.`, connection);
     } catch (err) {
         logger.error(`Connection error: ${err}`);
     }
+};
+
+/* Sends message to all session connections except sending connection */
+const sendMessage = (data: string, sendingConnection: IdentifiedConnection) => {
+    logger.info(`Message sent | Session: ${sendingConnection.sessionId} | Connection: ${sendingConnection.id}`);
+    logger.debug(`User: ${sendingConnection.userId}`);
+    logger.debug(data);
+    sessionService
+        .getSessionConnections(sendingConnection.sessionId)
+        .filter(sessionConnection => sessionConnection.id !== sendingConnection.id)
+        .map(sessionConnection => sessionConnection.write(new SocketMessage(sendingConnection.userId, data).toString()));
 };
 
 export default sessionHandler;

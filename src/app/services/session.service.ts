@@ -1,25 +1,20 @@
-import { Connection } from 'sockjs';
 import uuidv4 from 'uuid/v4';
-
-interface SessionConnections {
-    [key: string]: { userId: string; connection: Connection }[];
-}
+import IdentifiedConnection from '@app/models/connection.model';
 
 export default class SessionService {
-    sessions: SessionConnections = {};
-    createSession = (connection: Connection, userId: string) => {
-        const newSessionId = uuidv4();
-        this.sessions[newSessionId] = [{ userId: userId, connection: connection }];
-        return newSessionId;
+    private connections: IdentifiedConnection[] = [];
+    private createSession = (connection: IdentifiedConnection) => {
+        connection.sessionId = uuidv4();
+        this.connections.push(connection);
     };
-    joinOrCreateSession = (sessionId: string, connection: Connection, userId: string) => {
-        if (this.sessions[sessionId]) {
-            this.sessions[sessionId].push({ userId: userId, connection: connection });
-            return sessionId;
+    joinOrCreateSession = (newConnection: IdentifiedConnection) => {
+        if (newConnection.sessionId && this.connections.find(connection => connection.sessionId === newConnection.sessionId)) {
+            this.connections.push(newConnection);
+            return;
         }
-        return this.createSession(connection, userId);
+        this.createSession(newConnection);
     };
     getSessionConnections = (sessionId: string) => {
-        return this.sessions[sessionId];
+        return this.connections.filter(connection => connection.sessionId === sessionId);
     };
 }
