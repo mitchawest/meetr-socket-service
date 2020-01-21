@@ -7,6 +7,7 @@ import { performance } from 'perf_hooks';
 import amqpService from '@service/amqp.service';
 
 const messageHandler: { post: IdentifiedRequestHandler } = {
+    /* Adds a message to session object in mongo. Updated session is posted to message queue and distributed to connected sockets */
     post: async (req, res, next) => {
         try {
             const t = performance.now();

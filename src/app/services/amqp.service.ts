@@ -1,12 +1,15 @@
 import amqplib from 'amqplib';
 import uuidv4 from 'uuid/v4';
 import http from 'http';
-import messageService from '@service/message.service';
+import sessionMessageService from '@service/message.service';
 
+/* Manages creation of dedicated message queue in rabbit mq, getting/sending to all active queues, listening to service-specific queue, and closing queue on exit */
 class AMQPService {
     private connection: amqplib.Connection = null;
     private channel: amqplib.Channel;
     private queueName: string;
+
+    /* Creates queue and stores queue name */
     init = () =>
         new Promise((resolve, reject) => {
             amqplib
@@ -31,6 +34,8 @@ class AMQPService {
                 .catch(err => reject(err));
         });
 
+    /* Gets all active queues from rabbit using basic auth, and distributes message to all. Each service determinies whether or not message should be sent to socket connections based on
+    the members in the object and the connections stored in the connection service */
     send = (message: object) =>
         new Promise((resolve, reject) => {
             http.get(
@@ -63,8 +68,10 @@ class AMQPService {
             );
         });
 
-    private listen = () => this.channel.consume(this.queueName, messageService.sendMessage, { noAck: true });
+    /* listens to service-specific queue */
+    private listen = () => this.channel.consume(this.queueName, sessionMessageService.sendMessage, { noAck: true });
 
+    /* Closes service-specific queue */
     close = () =>
         new Promise((resolve, reject) => {
             if (this.connection && this.queueName) {

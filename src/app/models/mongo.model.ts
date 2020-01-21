@@ -1,5 +1,6 @@
 import mongodb, { MongoClientOptions, Db, MongoClient } from 'mongodb';
 
+/* Creates basic mongo object and adds connect method. Connection requires specific database name */
 export default class MongoDb {
     private client: MongoClient;
     private db: Db;

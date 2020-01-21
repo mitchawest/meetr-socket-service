@@ -7,6 +7,7 @@ import { performance } from 'perf_hooks';
 import amqpService from '@service/amqp.service';
 
 const memberHandler: { post: IdentifiedRequestHandler; patch: IdentifiedRequestHandler; delete: IdentifiedRequestHandler } = {
+    /* Adds a session member to session object in mongo. Updated session is posted to message queue and distributed to connected sockets */
     post: async (req, res, next) => {
         try {
             const t = performance.now();
@@ -47,6 +48,7 @@ const memberHandler: { post: IdentifiedRequestHandler; patch: IdentifiedRequestH
             next(err);
         }
     },
+    /* Updates a session member on session object in mongo. Updated session is posted to message queue and distributed to connected sockets */
     patch: async (req, res, next) => {
         try {
             const t = performance.now();
@@ -83,6 +85,7 @@ const memberHandler: { post: IdentifiedRequestHandler; patch: IdentifiedRequestH
             next(err);
         }
     },
+    /* Removes a session member from session object in mongo. Updated session is posted to message queue and distributed to connected sockets */
     delete: async (req, res, next) => {
         try {
             const t = performance.now();

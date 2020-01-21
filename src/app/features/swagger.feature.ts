@@ -1,4 +1,4 @@
-import SwaggerUI from '@root/src/app/models/swaggerui.model';
+import SwaggerUI from '@model/swaggerui.model';
 
 const swaggerHandler = new SwaggerUI('openapi.yaml', {
     supportHeaderParams: true,

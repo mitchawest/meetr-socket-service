@@ -8,6 +8,7 @@ import { okResponse, createdResponse } from '@service/response.service';
 import { performance } from 'perf_hooks';
 
 const sessionHandler: { get: IdentifiedRequestHandler; post: IdentifiedRequestHandler; delete: IdentifiedRequestHandler } = {
+    /* Retreives a created session from mongo */
     get: async (req, res, next) => {
         try {
             const t = performance.now();
@@ -28,6 +29,7 @@ const sessionHandler: { get: IdentifiedRequestHandler; post: IdentifiedRequestHa
             next(err);
         }
     },
+    /* Creates a basic session in mongo. Members and messages can be added via /member and /message routes respectively */
     post: async (req, res, next) => {
         try {
             const t = performance.now();
