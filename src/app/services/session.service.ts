@@ -1,20 +1,12 @@
-import uuidv4 from 'uuid/v4';
-import IdentifiedConnection from '@app/models/connection.model';
+import ws from 'ws';
 
-export default class SessionService {
-    private connections: IdentifiedConnection[] = [];
-    private createSession = (connection: IdentifiedConnection) => {
-        connection.sessionId = uuidv4();
-        this.connections.push(connection);
-    };
-    joinOrCreateSession = (newConnection: IdentifiedConnection) => {
-        if (newConnection.sessionId && this.connections.find(connection => connection.sessionId === newConnection.sessionId)) {
-            this.connections.push(newConnection);
-            return;
-        }
-        this.createSession(newConnection);
-    };
-    getSessionConnections = (sessionId: string) => {
-        return this.connections.filter(connection => connection.sessionId === sessionId);
+class ConnectionService {
+    public connections: { id: string; connection: ws }[] = [];
+    public addConnection = (id: string, connection: ws) => {
+        this.connections.push({ id: id, connection: connection });
     };
 }
+
+const connectionService = new ConnectionService();
+
+export default connectionService;

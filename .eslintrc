@@ -16,21 +16,21 @@
     ],
     "rules": {
         "import/no-unresolved": "off",
-        "no-param-reassign": [ "warn", {
+        "no-param-reassign": ["warn", {
             "props": false
-        } ],
-        "max-len": [ "warn", {
-            "code": 150,
+        }],
+        "max-len": ["warn", {
+            "code": 240,
             "ignoreUrls": true,
             "ignoreComments": true,
             "ignoreTrailingComments": true,
             "ignoreTemplateLiterals": true,
             "ignoreRegExpLiterals": true
-        } ],
+        }],
         "no-unused-vars": "off",
-        "@typescript-eslint/no-unused-vars": [ "warn", {
+        "@typescript-eslint/no-unused-vars": ["warn", {
             "args": "none"
-        } ]
+        }]
     },
     "env": {
         "node": true

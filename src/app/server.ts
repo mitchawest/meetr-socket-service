@@ -1,34 +1,48 @@
 import http from 'http';
-import sockjs from 'sockjs';
+import ws from 'ws';
 
+import expressInit from '@root/src/app/express-app';
 import logger from '@service/logger.service';
-import { LEVELS, COLORS } from '@util/enums';
-import sessionHandler from '@feature/connectionHandler.feature';
+import connectionHandler from '@feature/connectionHandler.feature';
+import { COLORS, LEVELS } from '@util/enums';
+import mongoService from '@service/mongo.service';
+import amqpService from '@service/amqp.service';
 
 const init = async () => {
     try {
-        /* Initialize logger with log level enumeration */
+        /* Initialize logger */
         logger.init(LEVELS, COLORS);
 
+        /* Create http server */
+        const server = http.createServer();
+
         /* Create socket server */
-        const socket = sockjs.createServer({
-            websocket: true,
-            log: (severity: string, message: string) => {
-                logger[severity](message);
-            }
+        const wsServer = new ws.Server({
+            server: server
         });
 
-        /* Add listeners to connection event */
-        socket.on('connection', sessionHandler);
+        /* Get express app */
+        const app = await expressInit();
 
-        /* Start socket server */
-        const port = process.env.RUNTIME_PORT || 8000;
-        const server = http.createServer();
-        socket.installHandlers(server);
+        /* Init mongo connection */
+        await mongoService.init();
+
+        /* Init amqp connection */
+        await amqpService.init();
+
+        server.on('request', app);
+        wsServer.on('connection', connectionHandler);
+        wsServer.on('error', err => {
+            throw err;
+        });
+
+        /* Listen on configured port */
+        const port = process.env.RUNTIME_PORT || 80;
         server.listen(port, () => logger.info(`${process.env.NAMESPACE} server listening on port: ${port}`));
 
         return server;
     } catch (err) {
+        await amqpService.close();
         if (logger.debug) {
             logger.debug(err);
         } else {

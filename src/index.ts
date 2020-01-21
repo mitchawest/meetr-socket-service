@@ -5,13 +5,15 @@ import { LEVELS } from '@util/enums';
 /* Load env variables from .env file if non-production environment*/
 if (process.env.NODE_ENV && process.env.NODE_ENV.toUpperCase() !== 'PROD' && process.env.NODE_ENV.toUpperCase() !== 'PRODUCTION') {
     console.log('Loading env...');
-    const env = fs
-        .readFileSync('./.env')
-        .toString()
-        .split('\r\n');
+    let env: string | string[] = fs.readFileSync('./.env').toString();
+    if (env.includes('\r')) {
+        env = env.split('\r\n');
+    } else {
+        env = env.split('\n');
+    }
     env.forEach(variable => {
         const envSplit = variable.split('=');
-        const envKey = envSplit.splice(0, 1)[0].replace(/^"||^'|'$/g, '');
+        const envKey = envSplit.shift().replace(/^"||^'|'$/g, '');
         const envValue = envSplit
             .splice(0, envSplit.length)
             .join('=')
